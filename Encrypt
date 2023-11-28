@@ -917,7 +917,7 @@ identity.warp = function(world,door)
     if getBot().world == string.upper(world) then
         if door ~= "" then
             local stuck = 0
-            while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).fg == 6 do
+            while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).fg == 6 and not wrong do
                 sendPacket("action|join_request\nname|"..name.."\ninvitedWorld|0",3)
                 sleep(setting.delay.warp)
                 stuck = stuck + 1

@@ -2796,6 +2796,7 @@ identity.rotate = function(threads)
             goto Here
         end
     end
+    identity.recycles(threads)
 end
 
 identity.recycles = function(threads)

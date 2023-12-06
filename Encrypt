@@ -3042,7 +3042,13 @@ identity.rechecking = function(threads)
                                     for _, tile in pairs(getTiles()) do
                                         if tile.fg == 0 and getTile(tile.x, tile.y + 1).flags ~= 0 then
                                             if findItem(setting.item.seed) == 0 then
-                                                break
+                                                if setting.mode.plantwhendone then
+                                                    identity.takingseed(threads)
+                                                    sleep(250)
+                                                    goto BACK
+                                                else
+                                                    break
+                                                end
                                             end
                                             door = setting.farmList.door
                                             findPath(tile.x,tile.y)

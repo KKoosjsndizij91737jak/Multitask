@@ -34,6 +34,7 @@ identity.gaiax = 0
 identity.gaiay = 0
 identity.utx = 0
 identity.uty = 0
+identity.indexGen = 1
 seedX = setting.storage.seed.drop.x - 1
 seedY = setting.storage.seed.drop.y - 1
 packX = setting.storage.pack.drop.x - 1
@@ -134,9 +135,15 @@ identity.itemFloat = function(id)
 	return count
 end
 
-identity.writeFile = function(textt)
+identity.writeJammer = function(text)
+    local file = io.open("jammer.txt","a")
+    file:write(text.."\n")
+    file:close()
+end
+
+identity.writeFile = function(text)
     local file = io.open("status.txt","a")
-    file:write(textt.."\n")
+    file:write(text.."\n")
     file:close()
 end
 
@@ -169,7 +176,7 @@ identity.backupacc = function(threads)
     for i = identity.indexBackup, #backups do
         thread = identity.splitt(backups[i],"([^"..account.symbol.."]+)")[1]
         threading = identity.splitt(backups[i],"([^"..account.symbol.."]+)")[2]
-        num = identity.splitt(backups[i],"([^"..account.symbol.."]+)")[3]
+        num = identity.splitt(backups[i],"([^"..account.symbol.."]+)")[3] or ""
         if account.botswitch.proxy then
             if account.typeaccount == "guest" then
                 if account.macposition == "left" then
@@ -446,15 +453,14 @@ identity.checkaccount = function(threads)
         identity.backupacc(threads)
         sleep(250)
     else
-        world = find
         if setting.mode.generate then
-            identity.warp(world,"")
+            identity.warp(find,"")
             sleep(250)
             ::BACK::
             while getTile(math.floor(getBot().x / 32)+1,math.floor(getBot().y / 32) - 1).fg == 226 do
                 punch(1,-1)
                 sleep(setting.delay.place)
-                identity.reconnect(world,"")
+                identity.reconnect(find,"")
             end
             if findItem(226) > 0 then
                 identity.storingjammer(threads)
@@ -463,8 +469,7 @@ identity.checkaccount = function(threads)
                 goto BACK
             end
         end
-        random_letter = find
-        identity.warp(random_letter,"")
+        identity.warp(find,"")
         sleep(250)                          
         if setting.mode.removeBot then
             removeBot(getBot().name)
@@ -639,8 +644,8 @@ identity.reconnect = function(world,id,x,y)
                 if setting.mode.removeBot then
                     removeBot(getBot().name)
                     sleep(2000)
-                    error()
                 end
+                error()
             end
         end
         local counts = 0
@@ -715,7 +720,7 @@ identity.warp = function(world,door)
                 if string.find(varlist[1],"inaccessible.") then
                     nuked = true
                 end
-                if string.find(varlist[1], "experiencing high load,") then
+                if string.find(varlist[1], "please try again later.") then
                     subserver = true
                 end
                 if string.find(varlist[1], "people in it.") then
@@ -877,6 +882,73 @@ identity.joinworld = function(threads)
                 if not level then
                     if not subserver then
                         if not nuked then
+                        else
+                            nuked = false
+                            sleep(5000)
+                            print("World clearing history has nuked!!, change ur world history list")
+                            sleep(250)
+                            identity.botinfo("World clearing history has nuked!!, change ur world history list. SC Terminated @everyone")
+                            sleep(250)
+                            error()
+                        end
+                    else
+                        subserver = false
+                        sleep(5000)
+                        print("Bot : "..getBot().name.." system is sub-server, sleeping for 2 minutes")
+                        sleep(250)
+                        identity.botinfo("Bot : "..getBot().name.." system is sub-server, sleeping for 2 minutes @everyone")
+                        sleep(250)
+                        sleep(120000)
+                        goto BACK
+                    end
+                else
+                    level = false
+                    sleep(5000)
+                    print("World : "..world.." has level limit, change ur world history list")
+                    sleep(250)
+                    identity.botinfo("World : "..world.." has level limit, change ur world history list. SC Terminated @everyone")
+                    sleep(250)
+                    error()
+                end
+            else
+                people = false
+                sleep(5000)
+                print("World : "..world.." has full people, sleeping for 2 minutes")
+                sleep(250)
+                identity.botinfo("World : "..world.." has full people, sleeping for 2 minutes")
+                sleep(120000)
+                goto BACK
+            end
+        else
+            server = false
+            sleep(5000)
+            print("Bot : "..getBot().name.." idiot server, sleeping for 2 minutes")
+            sleep(250)
+            identity.botinfo("Bot : "..getBot().name.." idiot server, sleeping for 2 minutes @everyone")
+            sleep(120000)
+            goto BACK
+        end
+    end
+end
+
+identity.breakjammers = function()
+    for _, world in pairs(setting.mode.worldtobreak) do
+        ::BACK::
+        setJob("Take back jammer")
+        sleep(250)
+        identity.warp(world,"")
+        sleep(250)
+        identity.reconnect(world,"")
+        if not server then
+            if not people then
+                if not level then
+                    if not subserver then
+                        if not nuked then
+                            while getTile(math.floor(getBot().x / 32)+1,math.floor(getBot().y / 32) - 1).fg == 226 do
+                                punch(1,-1)
+                                sleep(setting.delay.place)
+                                identity.reconnect(world,"")
+                            end
                         else
                             nuked = false
                             sleep(5000)
@@ -1349,19 +1421,18 @@ identity.storingseeds = function(threads)
                                             sleep(250)
                                             print("All seeds storage has reached limit, Removing bot : [ "..getBot().name.." ] @everyone")
                                             sleep(250)
-                                            world = find
                                             if setting.mode.generate then
-                                                identity.warp(world,"")
+                                                identity.warp(find,"")
                                                 sleep(250)
                                                 while getTile(math.floor(getBot().x / 32)+1,math.floor(getBot().y / 32) - 1).fg == 226 do
                                                     punch(1,-1)
                                                     sleep(setting.delay.place)
-                                                    identity.reconnect(world,"")
+                                                    identity.reconnect(find,"")
                                                 end
                                                 identity.storingjammer(threads)
                                                 sleep(250)
                                             end
-                                            identity.warp(world,"") 
+                                            identity.warp(find,"") 
                                             sleep(250) 
                                             if setting.mode.removeBot then
                                                 removeBot(getBot().name)
@@ -1686,19 +1757,18 @@ identity.storingblocks = function(threads)
                                             sleep(250)
                                             print("All blocks storage has reached limit, Removing bot : [ "..getBot().name.." ] @everyone")
                                             sleep(250)
-                                            world = find
                                             if setting.mode.generate then
-                                                identity.warp(world,"")
+                                                identity.warp(find,"")
                                                 sleep(250)
                                                 while getTile(math.floor(getBot().x / 32)+1,math.floor(getBot().y / 32) - 1).fg == 226 do
                                                     punch(1,-1)
                                                     sleep(setting.delay.place)
-                                                    identity.reconnect(world,"")
+                                                    identity.reconnect(find,"")
                                                 end
                                                 identity.storingjammer(threads)
                                                 sleep(250)
                                             end
-                                            identity.warp(world,"")  
+                                            identity.warp(find,"")  
                                             sleep(250)
                                             if setting.mode.removeBot then
                                                 removeBot(getBot().name)
@@ -2007,8 +2077,7 @@ identity.line = function(threads)
                                         identity.storingseeds(threads)
                                         sleep(250)
                                     end
-                                    random_letter = find
-                                    identity.warp(random_letter,"")
+                                    identity.warp(find,"")
                                     sleep(250)
                                     if setting.mode.removeBot then
                                         identity.botinfo("Gems at world pnb has reached limit")
@@ -2474,6 +2543,7 @@ identity.rotate = function(threads)
         else
             while findItem(setting.item.block) >= setting.mode.pnbtile do
                 door = setting.farmList.door
+                local counts = 0
                 while identity.placeitem(botX,botY) do
                     for _,i in pairs(tilebreak) do
                         if getTile(botX + i,botY + tileY).fg == 0 and getTile(botX + i,botY + tileY).bg == 0 then
@@ -2947,10 +3017,17 @@ identity.rechecking = function(threads)
                                         sleep(250)
                                         door = setting.farmList.door
                                         identity.reconnect(threads,door,tile.x,tile.y)
+                                        local count = 0
                                         while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).bg == setting.item.block or getTile(math.floor(getBot().x / 32), math.floor(getBot().y / 32)).fg == setting.item.block do
                                             punch(0,0)
                                             sleep(setting.delay.punch)
                                             identity.reconnect(threads,door,tile.x,tile.y)
+                                            count = count + 1
+                                            if count == 30 then
+                                                print("This world : "..threads.." has burn, skipped world")
+                                                identity.botinfo("This world : "..threads.." has burn, skipped world")
+                                                break
+                                            end
                                         end
                                         collect(3)
                                         sleep(30)
@@ -2964,39 +3041,16 @@ identity.rechecking = function(threads)
                                 if not setting.mode.dontplant then
                                     for _, tile in pairs(getTiles()) do
                                         if tile.fg == 0 and getTile(tile.x, tile.y + 1).flags ~= 0 then
-                                            if setting.mode.splice.access then
-                                                if findItem(setting.item.seed) == 0 or findItem(setting.mode.splice.seed) == 0 then
-                                                    identity.takingseed(threads)
-                                                    sleep(250)
-                                                    goto BACK
-                                                end
-                                            else
-                                                if findItem(setting.item.seed) == 0 then
-                                                    identity.takingseed(threads)
-                                                    sleep(250)
-                                                    goto BACK
-                                                end
+                                            if findItem(setting.item.seed) == 0 then
+                                                break
                                             end
                                             door = setting.farmList.door
                                             findPath(tile.x,tile.y)
                                             sleep(setting.delay.plant)
-                                            if setting.mode.splice.access then
-                                                while getTile(tile.x,tile.y).fg ~= setting.item.seed do
-                                                    place(setting.item.seed,0,0)
-                                                    sleep(setting.delay.plant)
-                                                    identity.reconnect(threads,door,tile.x,tile.y)
-                                                end
-                                                while getTile(tile.x,tile.y).fg == setting.mode.splice.seed do
-                                                    place(setting.mode.splice.seed,0,0)
-                                                    sleep(setting.delay.plant)
-                                                    identity.reconnect(threads,door,tile.x,tile.y)
-                                                end
-                                            else
-                                                if getTile(tile.x,tile.y).fg ~= setting.item.seed then
-                                                    place(setting.item.seed,0,0)
-                                                    sleep(setting.delay.plant)
-                                                    identity.reconnect(threads,door,tile.x,tile.y)
-                                                end
+                                            if getTile(tile.x,tile.y).fg ~= setting.item.seed then
+                                                place(setting.item.seed,0,0)
+                                                sleep(setting.delay.plant)
+                                                identity.reconnect(threads,door,tile.x,tile.y)
                                             end
                                         end
                                     end
@@ -3996,49 +4050,31 @@ identity.storingretrieve = function()
     if string.upper(getBot().name) == string.upper(setting.retrieve.gaia) then
         for i, tile in pairs(getTiles()) do
             if tile.fg == 6946 then
-                ::BACK::
-                findPath(tile.x+(tileRetrieve),tile.y - 1)
+                findPath(tile.x,tile.y - 1)
                 sleep(1000)
-                local count = 0
-                identity.reconnect(world,door,tile.x+(tileRetrieve),tile.y - 1)
-                if tile.x + (tileRetrieve) >= 98 then
-                    tile.y = tile.y - 1
-                    tileRetrieve = 0
-                end
-                while findItem(setting.item.seed) > 0 do
-                    drop(setting.item.seed)
-                    sleep(setting.delay.drop)
-                    identity.reconnect(world,door,tile.x+(tileRetrieve),tile.y - 1)
-                    count = count + 1
-                    if count >= 3 then
-                        tileRetrieve = tileRetrieve + 1
-                        goto BACK
-                    end
-                end
+                identity.reconnect(world,door,tile.x,tile.y - 1)
+            end
+            while findItem(setting.item.seed) > 0 do
+                drop(setting.item.seed)
+                sleep(setting.delay.drop)
+                move(1,0)
+                sleep(250)
+                identity.reconnect(world,door,tile.x,tile.y - 1)
             end
         end
     elseif string.upper(getBot().name) == string.upper(setting.retrieve.ut) then
         for i, tile in pairs(getTiles()) do
             if tile.fg == 6948 then
-                ::BACKS::
-                findPath(tile.x+(tileRetrieve),tile.y - 1)
+                findPath(tile.x,tile.y - 1)
                 sleep(1000)
-                local count = 0
-                identity.reconnect(world,door,tile.x+(tileRetrieve),tile.y - 1)
-                if tile.x + (tileRetrieve) >= 98 then
-                    tile.y = tile.y - 1
-                    tileRetrieve = 0
-                end
-                while findItem(setting.item.block) > 0 do
-                    drop(setting.item.block)
-                    sleep(setting.delay.drop)
-                    identity.reconnect(world,door,tile.x+(tileRetrieve),tile.y - 1)
-                    count = count + 1
-                    if count >= 3 then
-                        tileRetrieve = tileRetrieve + 1
-                        goto BACKS
-                    end
-                end
+                identity.reconnect(world,door,tile.x,tile.y - 1)
+            end
+            while findItem(setting.item.block) > 0 do
+                drop(setting.item.block)
+                sleep(setting.delay.drop)
+                move(1,0)
+                sleep(250)
+                identity.reconnect(world,door,tile.x,tile.y - 1)
             end
         end
     end
@@ -4046,6 +4082,17 @@ end
 
 if BizzantiuM.version == "1.0" and BizzantiuM.handler == "akbarsht" then
     sleep(math.random(setting.delay.running*1000))
+    if findItem(9640) > 0 then
+        ::SUCK::
+        identity.warp(find,"")
+        while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32) - 1).fg ~= 9640 do
+            place(9640,0,-1)
+            sleep(setting.delay.place)
+        end
+        if findItem(9640) > 0 then
+            goto SUCK
+        end
+    end
     ::Check::
     if findItem(98) == 0 and account.takepickaxe.access and getBot().status == "online" then
         identity.takepickaxe(threads)
@@ -4059,21 +4106,78 @@ if BizzantiuM.version == "1.0" and BizzantiuM.handler == "akbarsht" then
             sleep(250)
             goto HERE
         else
-            random_letter = find
             setJob("Generating worlds")
             sleep(250)
             identity.botinfo("Bot : "..getBot().name.." is generating a new world")
             sleep(250)
-            identity.warp(random_letter,"")
+            identity.warp(find,"")
             sleep(250)
-            identity.placeall()
+            identity.reconnect(find,"")
             sleep(250)
-            identity.botinfo("Bot : "..getBot().name.." success generating a new world, the world name is : "..random_letter.."")
-            sleep(250)
-            if findItem(226) > 0 then
+            if not server then
+                if not people then
+                    if not level then
+                        if not subserver then
+                            if not nuked then
+                                identity.placeall()
+                                sleep(250)
+                                identity.botinfo("Bot : "..getBot().name.." success generating a new world, the world name is : "..find.."")
+                                sleep(250)
+                                identity.writeJammer('"'..find..'",')
+                                if findItem(226) > 0 then
+                                    goto HERE
+                                end
+                            else
+                                nuked = false
+                                sleep(5000)
+                                print("World generate is NUKED!, check ur world !!")
+                                sleep(250)
+                                identity.botinfo("World generate is NUKED!, check ur world !! @everyone")
+                                sleep(250)
+                                goto HERE
+                            end
+                        else
+                            subserver = false
+                            sleep(5000)
+                            print("Bot : "..getBot().name.." system is sub-server, sleeping for 2 minutes")
+                            sleep(250)
+                            identity.botinfo("Bot : "..getBot().name.." system is sub-server, sleeping for 2 minutes @everyone")
+                            sleep(120000)
+                            goto HERE
+                        end
+                    else
+                        level = false
+                        sleep(5000)
+                        print("World generate has level limit, Trying to generate world again")
+                        sleep(250)
+                        identity.botinfo("World generate has level limit, Trying to generate world again! @everyone")
+                        sleep(250)
+                        goto HERE
+                    end
+                else
+                    people = false
+                    sleep(5000)
+                    print("World generate has full people, sleeping for 2 minutes")
+                    sleep(250)
+                    identity.botinfo("World generate has full people, sleeping for 2 minutes")
+                    sleep(120000)
+                    goto HERE
+                end
+            else
+                server = false
+                sleep(5000)
+                print("Bot : "..getBot().name.." idiot server, sleeping for 2 minutes")
+                sleep(250)
+                identity.botinfo("Bot : "..getBot().name.." idiot server, sleeping for 2 minutes @everyone")
+                sleep(120000)
                 goto HERE
             end
         end
+    end
+    if setting.mode.breakjammer then
+        identity.breakjammers()
+        sleep(250)
+        error()
     end
     if setting.typescript == "pnb" then
         if findItem(setting.item.block) >= setting.mode.pnbtile then
@@ -4208,19 +4312,18 @@ if BizzantiuM.version == "1.0" and BizzantiuM.handler == "akbarsht" then
             sleep(250)
             identity.botinfo("[ ||"..getBot().name.."|| ] Already finished all world, Terminated script! @everyone")
             sleep(250)
-            k = find
             if setting.mode.generate then
-                identity.warp(k,"")
+                identity.warp(find,"")
                 sleep(250)
                 while getTile(math.floor(getBot().x / 32)+1,math.floor(getBot().y / 32) - 1).fg == 226 do
                     punch(1,-1)
                     sleep(setting.delay.place)
-                    identity.reconnect(k,"")
+                    identity.reconnect(find,"")
                 end
                 identity.storingjammer(threads)
                 sleep(250)
             end
-            identity.warp(k,"")  
+            identity.warp(find,"")  
             sleep(250)
             if setting.mode.removeBot then
                 removeBot(getBot().name)

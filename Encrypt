@@ -2266,6 +2266,10 @@ identity.recycles = function(threads)
 end
 
 identity.rechecking = function(threads)
+    if getBot().world~= threads then
+        door = setting.farmList.door
+        identity.warp(threads,door)
+    end
     if setting.typescript == "ht" then
         for _, tile in pairs(getTiles()) do
             if tile.fg == setting.item.seed and tile.ready then
@@ -2400,6 +2404,7 @@ identity.rechecking = function(threads)
             end
         end
     elseif setting.typescript == "rotation" or setting.typescript == "sellgems" then
+        ::BACK::
         for _, tile in pairs(getTiles()) do
             if tile.fg == setting.item.seed and tile.ready then
                 door = setting.farmList.door
@@ -2464,6 +2469,7 @@ identity.rechecking = function(threads)
                     identity.webhookinfo()
                 else
                     identity.plant(threads)
+                    goto BACK
                 end
             elseif findItem(112) > setting.pack.mingems and setting.pack.buypack then
                 identity.buying(threads)
@@ -2887,6 +2893,7 @@ identity.harvest = function(threads)
             end
             identity.rotate(threads)
         end
+        ::BACK::
         for y = -1, 53 do
             for x = tileA, tileB, tileC do
                 if getTile(x,y).fg == setting.item.seed and getTile(x,y).ready then
@@ -2921,10 +2928,7 @@ identity.harvest = function(threads)
                         identity.webhookinfo()
                     elseif findItem(setting.item.seed) > setting.item.amountseed then
                         identity.plant(threads)
-                        setJob("Harvesting")
-                        door = setting.farmList.door
-                        identity.warp(threads,door)
-                        identity.webhookinfo()
+                        goto BACK
                     elseif findItem(112) > setting.pack.mingems and setting.pack.buypack then
                         identity.buying(threads)
                         identity.storingpacks(threads)
@@ -2974,6 +2978,7 @@ identity.harvest = function(threads)
             end
         end
     elseif setting.typescript == "sellgems" then
+        ::BACK::
         for y = -1, 53 do
             for x = tileA, tileB, tileC do
                 if getTile(x,y).fg == setting.item.seed and getTile(x,y).ready then
@@ -3008,10 +3013,7 @@ identity.harvest = function(threads)
                         identity.webhookinfo()
                     elseif findItem(setting.item.seed) > setting.item.amountseed then
                         identity.plant(threads)
-                        setJob("Harvesting")
-                        door = setting.farmList.door
-                        identity.warp(threads,door)
-                        identity.webhookinfo()
+                        goto BACK
                     elseif findItem(112) > setting.pack.mingems and setting.pack.buypack then
                         identity.buying(threads)
                         identity.storingpacks(threads)
@@ -3133,10 +3135,7 @@ identity.plant = function(threads)
     elseif setting.typescript == "rotation" or setting.typescript == "sellgems" then
         for y = -1, 53 do
             for x = tileA, tileB, tileC do
-                if getTile(x, y).fg == 0 and getTile(x, y + 1).flags ~= 0 then
-                    if findItem(setting.item.seed) == 0 then
-                        identity.harvest(threads)
-                    end
+                if getTile(x, y).fg == 0 and getTile(x, y + 1).flags ~= 0 and findItem(setting.item.seed) > 0 then
                     door = setting.farmList.door
                     findPath(x,y)
                     sleep(setting.delay.plant)
@@ -3163,12 +3162,6 @@ identity.plant = function(threads)
             elseif tileD == 0 then
                 tileD = tileD + 1
             end
-        end
-        if findItem(setting.item.seed) > setting.item.amountseed then
-            identity.storingseeds(threads)
-            setJob("Harvesting")
-            door = setting.farmList.door
-            identity.warp(threads,door)
         end
     end
 end

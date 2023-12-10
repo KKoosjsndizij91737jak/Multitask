@@ -3063,7 +3063,7 @@ identity.plant = function(threads)
     tileB = 0
     tileC = -1
     tileD = 0
-    if setting.type == "pt" then
+    if setting.typescript == "pt" then
         for y = -1, 53 do
             for x = tileA, tileB, tileC do
                 if getTile(x, y).fg == 0 and getTile(x, y + 1).flags ~= 0 then

@@ -2055,12 +2055,12 @@ identity.rotate = function(threads)
     if not setting.mode.generate then
         ::BACK::
         setJob("PNB")
-        botX = math.floor(getBot().x / 32)
-        botY = math.floor(getBot().y / 32)
         while math.floor(getBot().x / 32) ~= 10 or math.floor(getBot().y / 32) ~= 0 do
             findPath(10,0)
             sleep(500)
         end
+        botX = math.floor(getBot().x / 32)
+        botY = math.floor(getBot().y / 32)
         if setting.mode.pnbtile == 1 then
             while findItem(setting.item.block) >= setting.mode.pnbtile do
                 door = setting.farmList.door

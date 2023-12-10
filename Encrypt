@@ -2057,13 +2057,8 @@ identity.rotate = function(threads)
         setJob("PNB")
         botX = math.floor(getBot().x / 32)
         botY = math.floor(getBot().y / 32)
-        if botX > 97 then
-            botX = botX - 2
-        elseif botX < 3 then
-            botX = botX + 2
-        end
-        while math.floor(getBot().x / 32) ~= botX or math.floor(getBot().y / 32) ~= botY do
-            findPath(botX,botY)
+        while math.floor(getBot().x / 32) ~= 10 or math.floor(getBot().y / 32) ~= 0 do
+            findPath(10,0)
             sleep(500)
         end
         if setting.mode.pnbtile == 1 then
@@ -2093,7 +2088,6 @@ identity.rotate = function(threads)
                     identity.storingpacks(threads)
                     door = setting.farmList.door
                     identity.warp(threads,door)
-                    identity.webhookinfo()
                     goto BACK
                 end
             end
@@ -2891,13 +2885,6 @@ identity.harvest = function(threads)
             end
         end
     elseif setting.typescript == "rotation" then
-        if findItem(setting.item.block) > 180 and not setting.mode.generate then
-            while math.floor(getBot().x / 32) ~= 10 or math.floor(getBot().y / 32) ~= 0 do
-                findPath(10,0)
-                sleep(500)
-            end
-            identity.rotate(threads)
-        end
         ::BACK::
         for y = -1, 53 do
             for x = tileA, tileB, tileC do

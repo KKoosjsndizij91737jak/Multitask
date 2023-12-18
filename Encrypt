@@ -95,7 +95,7 @@ if tileY == 0 then
         elseif pnbmode == "down" then
             tileY = 2
         end
-    elseif typescript == "rotation" then
+    elseif typescript == "rotation" or typescript == "pabrik" then
         tileY = - 1
     end
 end

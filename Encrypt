@@ -328,12 +328,12 @@ end
 
 identity.hookprofit = function()
     strings = ""
-    world = identity.splitt(worldtogrind[index],"[^:]+")[1]
     if short then
-        strings = strings.."\n[ ||"..(string.sub(world,1,3)).."|| ] "..(infoid[world] or "?")..""
+        strings = strings.."\n[ ||"..(string.sub(worldtogrind,1,3)).."|| ] "..(infoid[worldtogrind] or "?")..""
     else
-        strings = strings.."\n[ ||"..string.upper(world).."|| ] "..(infoid[world] or "?")..""
+        strings = strings.."\n[ ||"..string.upper(worldtogrind).."|| ] "..(infoid[worldtogrind] or "?")..""
     end
+    return strings
 end
 
 identity.hookseed = function()
@@ -918,7 +918,7 @@ end
 identity.breakjammers = function()
     for _, idx in pairs(sjam) do
         setJob("Take back jammer")
-        identity.warp(world,"")
+        identity.warp(idx,"")
         while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).fg == 6 do
             move(1,0)
             sleep(500)
@@ -2586,81 +2586,32 @@ identity.rechecking = function(threads)
             end
         end
     elseif typescript == "rotation" or typescript == "sellgems" then
-        ::BACK::
-        for _, tile in pairs(getTiles()) do
-            if tile.fg == seed and tile.ready then
-                findPath(tile.x,tile.y)
-                sleep(delayharvest)
-                identity.reconnect(threads,doorfarmList,tile.x,tile.y)
-                if tile.fg == seed then
-                    punch(0,0)
+        if not leveling then
+            ::BACK::
+            for _, tile in pairs(getTiles()) do
+                if tile.fg == seed and tile.ready then
+                    findPath(tile.x,tile.y)
                     sleep(delayharvest)
                     identity.reconnect(threads,doorfarmList,tile.x,tile.y)
-                end
-                if ignoregems then
-                    collect(range,112)
-                else
-                    collect(range)
-                end
-                sleep(delaycollect)
-            end
-            if findItem(idwearitem) == 0 then
-                if wearitem then
-                    identity.support(threads)
-                    setJob("Rechecking")
-                    identity.warp(threads,doorfarmList)
-                    identity.webhookinfo()
-                end
-            end
-            if findItem(block) > 180 then
-                if typescript == "rotation" then
-                    if pnbotherworld then
-                        identity.rotate(threads)
-                        setJob("Rechecking")
-                        identity.warp(threads,doorfarmList)
-                        identity.webhookinfo()
-                    else
-                        identity.rotate(threads)
+                    if tile.fg == seed then
+                        punch(0,0)
+                        sleep(delayharvest)
+                        identity.reconnect(threads,doorfarmList,tile.x,tile.y)
                     end
-                elseif typescript == "sellgems" then
-                    identity.line(threads)
-                end
-            end
-            if findItem(itemevent[1]) > amount then
-                identity.storingevents(threads)
-                setJob("Rechecking")
-                identity.warp(threads,doorfarmList)
-                identity.webhookinfo()
-            elseif findItem(seed) >= amountseed then
-                if dontplant then
-                    identity.storingseeds(threads)
-                    setJob("Rechecking")
-                    identity.warp(threads,doorfarmList)
-                    identity.webhookinfo()
-                else
-                    identity.plant(threads)
-                    goto BACK
-                end
-            elseif findItem(112) > mingems and buypack then
-                identity.buying(threads)
-                identity.storingpacks(threads)
-                setJob("Rechecking")
-                identity.warp(threads,doorfarmList)
-                identity.webhookinfo()
-            end
-        end
-        for _, obj in pairs(getObjects()) do
-            if obj.id == block then
-                if identity.itemFloat(block) ~= 0 then
-                    findPath(math.floor(obj.x / 32),math.floor(obj.y / 32))
-                    sleep(delaycollect)
                     if ignoregems then
                         collect(range,112)
                     else
                         collect(range)
                     end
                     sleep(delaycollect)
-                    identity.reconnect(threads,doorfarmList,math.floor(obj.x / 32),math.floor(obj.y / 32))
+                end
+                if findItem(idwearitem) == 0 then
+                    if wearitem then
+                        identity.support(threads)
+                        setJob("Rechecking")
+                        identity.warp(threads,doorfarmList)
+                        identity.webhookinfo()
+                    end
                 end
                 if findItem(block) > 180 then
                     if typescript == "rotation" then
@@ -2681,11 +2632,16 @@ identity.rechecking = function(threads)
                     setJob("Rechecking")
                     identity.warp(threads,doorfarmList)
                     identity.webhookinfo()
-                elseif findItem(seed) > 180 then
-                    identity.storingseeds(threads)
-                    setJob("Rechecking")
-                    identity.warp(threads,doorfarmList)
-                    identity.webhookinfo()
+                elseif findItem(seed) >= amountseed then
+                    if dontplant then
+                        identity.storingseeds(threads)
+                        setJob("Rechecking")
+                        identity.warp(threads,doorfarmList)
+                        identity.webhookinfo()
+                    else
+                        identity.plant(threads)
+                        goto BACK
+                    end
                 elseif findItem(112) > mingems and buypack then
                     identity.buying(threads)
                     identity.storingpacks(threads)
@@ -2694,55 +2650,101 @@ identity.rechecking = function(threads)
                     identity.webhookinfo()
                 end
             end
-        end
-        for _, tile in pairs(getTiles()) do
-            if tile.fg == block or tile.bg == block then
-                findPath(tile.x,tile.y)
-                identity.reconnect(threads,doorfarmList,tile.x,tile.y)
-                local count = 0
-                while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).bg == block or getTile(math.floor(getBot().x / 32), math.floor(getBot().y / 32)).fg == block do
-                    punch(0,0)
-                    sleep(delaypunch)
-                    identity.reconnect(threads,doorfarmList,tile.x,tile.y)
-                    count = count + 1
-                    if count == 100 then
-                        print("This world : "..threads.." has burn, skipped world")
-                        identity.botinfo("This world : "..threads.." has burn, skipped world")
-                        break
+            for _, obj in pairs(getObjects()) do
+                if obj.id == block then
+                    if identity.itemFloat(block) ~= 0 then
+                        findPath(math.floor(obj.x / 32),math.floor(obj.y / 32))
+                        sleep(delaycollect)
+                        if ignoregems then
+                            collect(range,112)
+                        else
+                            collect(range)
+                        end
+                        sleep(delaycollect)
+                        identity.reconnect(threads,doorfarmList,math.floor(obj.x / 32),math.floor(obj.y / 32))
                     end
-                end
-                collect(3)
-                sleep(30)
-            end
-        end
-        if not dontplant then
-            for _, tile in pairs(getTiles()) do
-                if tile.fg == 0 and getTile(tile.x, tile.y + 1).flags ~= 0 then
-                    if findItem(seed) == 0 then
-                        identity.takingseed(threads)
+                    if findItem(block) > 180 then
+                        if typescript == "rotation" then
+                            if pnbotherworld then
+                                identity.rotate(threads)
+                                setJob("Rechecking")
+                                identity.warp(threads,doorfarmList)
+                                identity.webhookinfo()
+                            else
+                                identity.rotate(threads)
+                            end
+                        elseif typescript == "sellgems" then
+                            identity.line(threads)
+                        end
+                    end
+                    if findItem(itemevent[1]) > amount then
+                        identity.storingevents(threads)
                         setJob("Rechecking")
                         identity.warp(threads,doorfarmList)
                         identity.webhookinfo()
-                        if findItem(seed) ~= 0 then 
-                            goto BACK
-                        else
-                            break
-                        end
-                    end
-                    findPath(tile.x,tile.y)
-                    sleep(delayplant)
-                    if getTile(tile.x,tile.y).fg ~= seed then
-                        place(seed,0,0)
-                        sleep(delayplant)
-                        identity.reconnect(threads,doorfarmList,tile.x,tile.y)
+                    elseif findItem(seed) > 180 then
+                        identity.storingseeds(threads)
+                        setJob("Rechecking")
+                        identity.warp(threads,doorfarmList)
+                        identity.webhookinfo()
+                    elseif findItem(112) > mingems and buypack then
+                        identity.buying(threads)
+                        identity.storingpacks(threads)
+                        setJob("Rechecking")
+                        identity.warp(threads,doorfarmList)
+                        identity.webhookinfo()
                     end
                 end
             end
-            if findItem(seed) >= amountseed then
-                identity.storingseeds(threads)
-                setJob("Rechecking")
-                identity.warp(threads,doorfarmList)
-                identity.webhookinfo()
+            for _, tile in pairs(getTiles()) do
+                if tile.fg == block or tile.bg == block then
+                    findPath(tile.x,tile.y)
+                    identity.reconnect(threads,doorfarmList,tile.x,tile.y)
+                    local count = 0
+                    while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).bg == block or getTile(math.floor(getBot().x / 32), math.floor(getBot().y / 32)).fg == block do
+                        punch(0,0)
+                        sleep(delaypunch)
+                        identity.reconnect(threads,doorfarmList,tile.x,tile.y)
+                        count = count + 1
+                        if count == 100 then
+                            print("This world : "..threads.." has burn, skipped world")
+                            identity.botinfo("This world : "..threads.." has burn, skipped world")
+                            break
+                        end
+                    end
+                    collect(3)
+                    sleep(30)
+                end
+            end
+            if not dontplant then
+                for _, tile in pairs(getTiles()) do
+                    if tile.fg == 0 and getTile(tile.x, tile.y + 1).flags ~= 0 then
+                        if findItem(seed) == 0 then
+                            identity.takingseed(threads)
+                            setJob("Rechecking")
+                            identity.warp(threads,doorfarmList)
+                            identity.webhookinfo()
+                            if findItem(seed) ~= 0 then 
+                                goto BACK
+                            else
+                                break
+                            end
+                        end
+                        findPath(tile.x,tile.y)
+                        sleep(delayplant)
+                        if getTile(tile.x,tile.y).fg ~= seed then
+                            place(seed,0,0)
+                            sleep(delayplant)
+                            identity.reconnect(threads,doorfarmList,tile.x,tile.y)
+                        end
+                    end
+                end
+                if findItem(seed) >= amountseed then
+                    identity.storingseeds(threads)
+                    setJob("Rechecking")
+                    identity.warp(threads,doorfarmList)
+                    identity.webhookinfo()
+                end
             end
         end
     end
@@ -3779,10 +3781,8 @@ end
 
 identity.grinder = function(threads)
     ::HERE::
-    world = identity.splitt(worldtogrind[index],"[^:]+")[1]
-    door = identity.splitt(worldtogrind[index],"[^:]+")[2]
     setJob("Grinding")
-    identity.warp(world,door)
+    identity.warp(worldtogrind,iddoorworldtogrind)
     if not people then
         if not level then
             if not subserver then
@@ -4132,6 +4132,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
                                     identity.collectobj(value)
                                 elseif typescript == "pt" then
                                     identity.plant(value)
+                                    identity.rechecking(value)
                                 end
                             else
                                 wrong = false

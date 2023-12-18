@@ -22,6 +22,7 @@ local tilePack = 0
 local tileEvent = 0
 local tileRetrieve = 0
 local tileFactory = 0
+local tileJammer = 0
 local identity = {}
 local tileY = 0
 identity.block = 1
@@ -50,6 +51,8 @@ grindX = dropgrindX - 1
 grindY = dropgrindY - 1
 posX = customposX - 1
 posY = customposY - 1
+jammerX = dropjammerX - 1
+jammerY = dropjammerY - 1
 seed = block + 1
 
 identity.splitt = function(str, ptr)
@@ -2831,11 +2834,31 @@ identity.storingjammer = function()
             if not subserver then
                 if not nuked then
                     if not wrong then
-                        while findItem(226) > 0 do
-                            drop(226)
-                            sleep(delaydrop)
-                            move(0,-1)
-                            sleep(delaydrop)
+                        for i,tile in pairs(getTiles()) do
+                            if tile.fg == 0 or tile.bg == 0 then
+                                ::DROPS::
+                                findPath(jammerX + (tileJammer),jammerY)
+                                sleep(1000)
+                                local count = 0
+                                identity.reconnect(world,door,jammerX + (tileJammer),jammerY)
+                                if jammerX + (tileJammer) >= 98 then
+                                    jammerY = jammerY - 1
+                                    tileJammer = 0
+                                end
+                                while findItem(226) > 0 do
+                                    drop(226)
+                                    sleep(delaydrop)
+                                    identity.reconnect(world,door,jammerX + (tileJammer),jammerY)
+                                    count = count + 1
+                                    if count >= 2 then
+                                        tileJammer = tileJammer + 1
+                                        goto DROPS
+                                    end
+                                end
+                            end
+                            if findItem(226) == 0 then
+                                break
+                            end
                         end
                     else
                         wrong = false

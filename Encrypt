@@ -3792,7 +3792,7 @@ identity.grinder = function(threads)
                             if tile.fg == 4582 then
                                 findPath(tile.x,tile.y - 1)
                                 sleep(100)
-                                identity.reconnect(world,door,tile.x,tile.y - 1)
+                                identity.reconnect(worldtogrind,iddoorworldtogrind,tile.x,tile.y - 1)
                             end
                         end
                         place(block,0,1)
@@ -3805,7 +3805,7 @@ identity.grinder = function(threads)
                                 findPath(grindX + (tileFactory),grindY)
                                 sleep(1000)
                                 local count = 0
-                                identity.reconnect(world,door,grindX + (tileFactory),grindY)
+                                identity.reconnect(worldtogrind,iddoorworldtogrind,grindX + (tileFactory),grindY)
                                 if grindX + (tileFactory) >= 98 then
                                     grindY = grindY - 1
                                     tileFactory = 0
@@ -3813,7 +3813,7 @@ identity.grinder = function(threads)
                                 while findItem(itemidaftergrind) > 0 do
                                     drop(itemidaftergrind)
                                     sleep(delaydrop)
-                                    identity.reconnect(world,door,grindX + (tileFactory),grindY)
+                                    identity.reconnect(worldtogrind,iddoorworldtogrind,grindX + (tileFactory),grindY)
                                     count = count + 1
                                     if count >= 2 then
                                         tileFactory = tileFactory + 1
@@ -3850,15 +3850,15 @@ identity.grinder = function(threads)
         else
             level = false
             sleep(5000)
-            print("World : "..world.." has level limit, change ur level world limit")
-            identity.botinfo("World : "..world.." has level limit, change ur level world limit !, terminated script @everyone")
+            print("World to grinder has level limit, change ur level world limit")
+            identity.botinfo("World to grinder has level limit, change ur level world limit !, terminated script @everyone")
             error()
         end
     else
         people = false
         sleep(5000)
-        print("World : "..world.." has full people, sleeping for 2 minutes")
-        identity.botinfo("World : "..world.." has full people, sleeping for 2 minutes")
+        print("World to grinder has full people, sleeping for 2 minutes")
+        identity.botinfo("World to grinder has full people, sleeping for 2 minutes")
         sleep(120000)
         goto HERE
     end

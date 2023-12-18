@@ -328,10 +328,11 @@ end
 
 identity.hookprofit = function()
     strings = ""
+    world = identity.splitt(worldtogrind[index],"[^:]+")[1]
     if short then
-        strings = strings.."\n[ ||"..(string.sub(identity.splitt(worldtogrind[index],"[^:]+")[1],1,3)).."|| ] "..(infoid[identity.splitt(worldtogrind[index],"[^:]+")[1]] or "?")..""
+        strings = strings.."\n[ ||"..(string.sub(world,1,3)).."|| ] "..(infoid[world] or "?")..""
     else
-        strings = strings.."\n[ ||"..string.upper(identity.splitt(worldtogrind[index],"[^:]+")[1]).."|| ] "..(infoid[identity.splitt(worldtogrind[index],"[^:]+")[1]] or "?")..""
+        strings = strings.."\n[ ||"..string.upper(world).."|| ] "..(infoid[world] or "?")..""
     end
 end
 
@@ -571,9 +572,9 @@ identity.webhookinfo = function()
                                     inline = "false"
                                 }
                                 @{
-                                    name = "SEED"
+                                    name = "PROFIT"
                                     value = "]]..identity.hookprofit()..[["
-                                    inline = "true"
+                                    inline = "false"
                                 }
                             )
                             footer = @{
@@ -3668,7 +3669,7 @@ identity.algorithm = function(threads)
                         else
                             wrong = false
                             sleep(5000)
-                            identity.writeFiles("worldinfo","[ "..value.." ] is wrong id")
+                            identity.writeFile("worldinfo","[ "..value.." ] is wrong id")
                             sleep(1000)
                             print(""..value.." is wrong door id, skipped world")
                             identity.botinfo("[ ||"..value.."|| ] is wrong door id, skipped world @everyone")
@@ -3676,7 +3677,7 @@ identity.algorithm = function(threads)
                     else
                         nuked = false
                         sleep(5000)
-                        identity.writeFiles("worldinfo","[ "..value.." ] is NUKED !!")
+                        identity.writeFile("worldinfo","[ "..value.." ] is NUKED !!")
                         sleep(1000)
                         print(""..value.." is NUKED!, check ur world !!")
                         identity.botinfo("[ ||"..value.."|| ] is NUKED!, check ur world !! @everyone")
@@ -3906,7 +3907,7 @@ end
 if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
     if findItem(9640) > 0 then
         ::SUCK::
-        identity.warp(find,"")
+        identity.warp(getBot().name,"")
         while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32) - 1).fg ~= 9640 do
             place(9640,0,-1)
             sleep(delayplace)
@@ -3939,7 +3940,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
                         else
                             nuked = false
                             sleep(5000)
-                            identity.writeFiles("worldinfo","[ "..list.." ] is NUKED !!")
+                            identity.writeFile("worldinfo","[ "..list.." ] is NUKED !!")
                             sleep(1000)
                             print(""..list.." is NUKED!, check ur world !!")
                             identity.botinfo("[ ||"..list.."|| ] is NUKED!, check ur world !! @everyone")
@@ -4135,7 +4136,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
                             else
                                 wrong = false
                                 sleep(5000)
-                                identity.writeFiles("worldinfo","[ "..value.." ] is wrong id")
+                                identity.writeFile("worldinfo","[ "..value.." ] is wrong id")
                                 sleep(1000)
                                 print(""..value.." is wrong door id, skipped world")
                                 identity.botinfo("[ ||"..value.."|| ] is wrong door id, skipped world @everyone")
@@ -4143,7 +4144,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
                         else
                             nuked = false
                             sleep(5000)
-                            identity.writeFiles("worldinfo","[ "..value.." ] is NUKED !!")
+                            identity.writeFile("worldinfo","[ "..value.." ] is NUKED !!")
                             sleep(1000)
                             print(""..value.." is NUKED!, check ur world !!")
                             identity.botinfo("[ ||"..value.."|| ] is NUKED!, check ur world !! @everyone")

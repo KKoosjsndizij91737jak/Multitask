@@ -1513,9 +1513,7 @@ identity.take = function()
         end
     end
     infoid[world] = "["..identity.itemFloat(block).."]"
-    if recycle then
-        identity.recycles(threads)
-    end
+    identity.recycles(threads)
     identity.line(threads)
 end
 
@@ -2255,9 +2253,6 @@ identity.rotate = function(threads)
                 goto BACK
             end
         end
-        if recycle then
-            identity.recycles(threads)
-        end
     elseif typescript == "pabrik" then
         if not takebackfactory then
             ::BACK::
@@ -2446,6 +2441,7 @@ identity.rotate = function(threads)
             end
         end
     end
+    identity.recycles(threads)
 end
 
 identity.recycles = function(threads)

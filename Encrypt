@@ -1637,17 +1637,17 @@ identity.takingseed = function(threads)
                         if not wrong then
                             if not looping then
                                 if identity.itemFloat(seed) == 0 then
-                                    if  typescript == "pabrik" or typescript == "rotation" or typescript == "sellgems" then
-                                        break
-                                    else
+                                    infoid[world] = ""..identity.itemFloat(seed).." EMPTY !!"
+                                    identity.botinfo("Seeds storage : [ ||"..world.."|| ] has empty, skipped world @everyone")
+                                    print("Seeds storage : [ "..world.." ] has empty, skipped world")
+                                    identity.takeseed = identity.takeseed + 1
+                                    if identity.takeseed > #storageseed then
                                         infoid[world] = ""..identity.itemFloat(seed).." EMPTY !!"
-                                        identity.botinfo("Seeds storage : [ ||"..world.."|| ] has empty, skipped world @everyone")
-                                        print("Seeds storage : [ "..world.." ] has empty, skipped world")
-                                        identity.takeseed = identity.takeseed + 1
-                                        if identity.takeseed > #storageseed then
-                                            infoid[world] = ""..identity.itemFloat(seed).." EMPTY !!"
-                                            identity.botinfo("All seeds storage has empty, Removing bot : [ ||"..getBot().name.."|| ] @everyone")
-                                            print("All seeds storage has empty, Removing bot : [ "..getBot().name.." ]")
+                                        identity.botinfo("All seeds storage has empty @everyone")
+                                        print("All seeds storage has empty")
+                                        if  typescript == "pabrik" or typescript == "rotation" or typescript == "sellgems" then
+                                            break
+                                        else
                                             if removingbot then
                                                 removeBot(getBot().name)
                                                 sleep(2000)
@@ -2445,7 +2445,6 @@ identity.rotate = function(threads)
 end
 
 identity.recycles = function(threads)
-    setJob("Recycling items")
     if typescript == "ht" then
         if findItem(block) > 0 then
             sendPacket("action|trash\n|itemID|" .. block,2)
@@ -3823,12 +3822,12 @@ identity.fact = function(threads)
             goto BACK
         end
     end
-    ::check::
     if findItem(block) < 180 then
         identity.facts(threads,find,"")
         say("/dance")
         sleep(10000)
-        goto check
+        identity.reconnect(find,"")
+        goto BACK
     else
         identity.rotate(threads)
         goto BACK
@@ -4052,10 +4051,14 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
                 goto BACK
             end
         end
+        if findItem(seed) >= amountpabrikseed then
+            identity.storingseeds(threads)
+        end
         if findItem(226) > 0 then
             identity.storingjammer()
         end
         setJob("Finished take back")
+        identity.warp(find,"")
         error()
     end
     if pnbotherworld then

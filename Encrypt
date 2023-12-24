@@ -103,7 +103,7 @@ if tileY == 0 then
     end
 end
 
-identity.genworld = function(threads)
+identity.genworld = function()
     local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     local withnum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     local generate = ""
@@ -120,7 +120,7 @@ identity.genworld = function(threads)
     end
     return generate
 end
-local find = identity.genworld(threads)
+local find = identity.genworld()
 
 identity.punchitem = function(x,y)
     for _,tilepunch in pairs(tilebreak) do
@@ -641,7 +641,7 @@ identity.reconnect = function(world,id,x,y)
                     removeBot(getBot().name)
                     sleep(2000)
                     identity.botinfo("Backup are enable, changing bot [ ||"..getBot().name.."|| ]")
-                    identity.backupacc()
+                    identity.backupacc(threads)
                 else
                     if removingbot then
                         removeBot(getBot().name)
@@ -735,7 +735,7 @@ identity.warp = function(world,door)
                         removeBot(getBot().name)
                         sleep(2000)
                         identity.botinfo("Backup are enable, changing bot [ ||"..getBot().name.."|| ]")
-                        identity.backupacc()
+                        identity.backupacc(threads)
                     else
                         if removingbot then
                             removeBot(getBot().name)
@@ -763,7 +763,7 @@ identity.warp = function(world,door)
                             removeBot(getBot().name)
                             sleep(2000)
                             identity.botinfo("Backup are enable, changing bot [ ||"..getBot().name.."|| ]")
-                            identity.backupacc()
+                            identity.backupacc(threads)
                         else
                             if removingbot then
                                 removeBot(getBot().name)
@@ -784,7 +784,7 @@ identity.warp = function(world,door)
     end
 end
 
-identity.takepickaxe = function(threads)
+identity.takepickaxe = function()
     ::BACK::
     world = identity.splitt(worldpickaxe[index],"[^:]+")[1]
     door = identity.splitt(worldpickaxe[index],"[^:]+")[2]
@@ -854,7 +854,7 @@ identity.takepickaxe = function(threads)
     end
 end
 
-identity.buying = function()
+identity.buying = function(threads)
     setJob("Buying packs")
     if findItem(112) >= mingems then
         if upbackpack then
@@ -1395,7 +1395,7 @@ identity.storingseeds = function(threads)
     end
 end
 
-identity.take = function()
+identity.take = function(threads)
     for i = identity.block, #storageblock do
         ::Here::
         setJob("Take blocks")
@@ -1416,7 +1416,7 @@ identity.take = function()
                                     infoid[world] = ""..identity.itemFloat(block).." EMPTY !!"
                                     identity.botinfo("All take blocks storage has empty, Removing bot : [ ||"..getBot().name.."|| ] @everyone")
                                     print("All take blocks storage has empty, Removing bot : [ "..getBot().name.." ]")
-                                    identity.storingseeds()
+                                    identity.storingseeds(threads)
                                     if pnbotherworld then
                                         identity.warp(find,"")
                                         while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).fg == 6 do
@@ -1807,10 +1807,10 @@ identity.line = function(threads)
                         if not wrong then
                             if identity.itemFloat(112) >= limitgems then
                                 if findItem(block) > 0 then
-                                    identity.storingblocks()
+                                    identity.storingblocks(threads)
                                 end
                                 if findItem(seed) > 0 then
-                                    identity.storingseeds()
+                                    identity.storingseeds(threads)
                                 end
                                 identity.warp(find,"")
                                 if removingbot then
@@ -2489,7 +2489,7 @@ identity.rechecking = function(threads)
             end
             if findItem(idwearitem) == 0 then
                 if wearitem then
-                    identity.support(threads)
+                    identity.support()
                     setJob("Rechecking")
                     identity.warp(threads,doorfarmList)
                     identity.webhookinfo()
@@ -2618,7 +2618,7 @@ identity.rechecking = function(threads)
             end
             if findItem(idwearitem) == 0 then
                 if wearitem then
-                    identity.support(threads)
+                    identity.support()
                     setJob("Rechecking")
                     identity.warp(threads,doorfarmList)
                     identity.webhookinfo()
@@ -2994,7 +2994,7 @@ identity.storingjammer = function()
     end
 end
 
-identity.support = function(threads)
+identity.support = function()
     ::BACK::
     setJob("Take support items")
     world = identity.splitt(worldwearitem[index],"[^:]+")[1]
@@ -3087,7 +3087,7 @@ identity.harvest = function(threads)
                     end
                     if findItem(idwearitem) == 0 then
                         if wearitem then
-                            identity.support(threads)
+                            identity.support()
                             setJob("Harvesting")
                             identity.warp(threads,doorfarmList)
                             identity.webhookinfo()
@@ -3172,7 +3172,7 @@ identity.harvest = function(threads)
                     end
                     if findItem(idwearitem) == 0 then
                         if wearitem then
-                            identity.support(threads)
+                            identity.support()
                             setJob("Harvesting")
                             identity.warp(threads,doorfarmList)
                             identity.webhookinfo()
@@ -3263,7 +3263,7 @@ identity.harvest = function(threads)
                     end
                     if findItem(idwearitem) == 0 then
                         if wearitem then
-                            identity.support(threads)
+                            identity.support()
                             setJob("Harvesting")
                             identity.warp(threads,doorfarmList)
                             identity.webhookinfo()
@@ -4000,7 +4000,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
     end
     ::Check::
     if findItem(98) == 0 and takepickaxe and getBot().status == "online" then
-        identity.takepickaxe(threads)
+        identity.takepickaxe()
         goto Check
     end
     if takebackjammer then
@@ -4064,7 +4064,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
     if pnbotherworld then
         ::HERE::
         if findItem(226) == 0 then
-            identity.takejammer(threads)
+            identity.takejammer()
             goto HERE
         else
             setJob("Generating worlds")
@@ -4149,7 +4149,7 @@ if BizzantiuM.version == "1.1" and BizzantiuM.handler == "akbarsht" then
         end
         ::HERE::
         if findItem(226) == 0 then
-            identity.takejammer(threads)
+            identity.takejammer()
             goto HERE
         else
             setJob("Generating worlds")

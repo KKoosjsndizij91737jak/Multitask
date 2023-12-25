@@ -1529,34 +1529,67 @@ identity.storingblocks = function(threads)
                 if not subserver then
                     if not nuked then
                         if not wrong then
-                            for i,tile in pairs(getTiles()) do
-                                if tile.fg == 0 or tile.bg == 0 then
-                                    ::BACK::
-                                    findPath(blockX + (tileBlock),blockY)
-                                    sleep(1000)
-                                    local count = 0
-                                    identity.reconnect(world,doorstorageblock,blockX + (tileBlock),blockY)
-                                    if blockX + (tileBlock) >= 98 then
-                                        blockY = blockY - 1
-                                        tileBlock = 0
+                            if identity.itemFloat(block) >= limitblock then
+                                infoid[world] = ""..identity.itemFloat(block).." LIMIT !!"
+                                identity.botinfo("Blocks storage : [ ||"..world.."|| ] has limit, skipped world @everyone")
+                                print("Blocks storage : [ "..world.." ] has limit, skipped world")
+                                identity.drop = identity.drop + 1
+                                if identity.drop > #storageblock then
+                                    infoid[world] = ""..identity.itemFloat(block).." Limit !!"
+                                    identity.botinfo("All blocks storage has limit, Removing bot : [ ||"..getBot().name.."|| ] @everyone")
+                                    print("All blocks storage has limit, Removing bot : [ "..getBot().name.." ]")
+                                    identity.storingseeds(threads)
+                                    if pnbotherworld then
+                                        identity.warp(find,"")
+                                        while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32)).fg == 6 do
+                                            move(1,0)
+                                            sleep(500)
+                                        end
+                                        while getTile(math.floor(getBot().x / 32),math.floor(getBot().y / 32) - 1).fg == 226 do
+                                            punch(0,-1)
+                                            sleep(delaypunch)
+                                            identity.reconnect(find,"")
+                                        end
+                                        identity.storingjammer()
                                     end
-                                    while findItem(block) > 0 do
-                                        drop(block)
-                                        sleep(delaydrop)
+                                    identity.warp(find,"")   
+                                    if removingbot then
+                                        removeBot(getBot().name)
+                                        sleep(2000)
+                                    end
+                                    setJob("Limit")
+                                    error()
+                                end
+                            else
+                                for i,tile in pairs(getTiles()) do
+                                    if tile.fg == 0 or tile.bg == 0 then
+                                        ::BACK::
+                                        findPath(blockX + (tileBlock),blockY)
+                                        sleep(1000)
+                                        local count = 0
                                         identity.reconnect(world,doorstorageblock,blockX + (tileBlock),blockY)
-                                        count = count + 1
-                                        if count >= 2 then
-                                            tileBlock = tileBlock + 1
-                                            goto BACK
+                                        if blockX + (tileBlock) >= 98 then
+                                            blockY = blockY - 1
+                                            tileBlock = 0
+                                        end
+                                        while findItem(block) > 0 do
+                                            drop(block)
+                                            sleep(delaydrop)
+                                            identity.reconnect(world,doorstorageblock,blockX + (tileBlock),blockY)
+                                            count = count + 1
+                                            if count >= 2 then
+                                                tileBlock = tileBlock + 1
+                                                goto BACK
+                                            end
                                         end
                                     end
+                                    if findItem(block) == 0 then
+                                        break
+                                    end
                                 end
-                                if findItem(block) == 0 then
-                                    break
-                                end
+                                sleep(100)
+                                break
                             end
-                            sleep(100)
-                            break
                         else
                             infoid[world] = "WRONG DOOR !!!"
                             wrong = false
